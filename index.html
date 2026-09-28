@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RegexCraft — Free Online Regex Tester</title>
+<meta name="description" content="Test regular expressions live in your browser with RegexCraft. Instant match highlighting, flag toggles, capture groups and a handy cheat sheet — free, no signup.">
+<link rel="canonical" href="https://regex.crafthub.ccwu.cc/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="RegexCraft — Free Online Regex Tester">
+<meta property="og:description" content="Test regular expressions live in your browser. Match highlighting, flags, capture groups and a cheat sheet — free, no signup.">
+<meta property="og:url" content="https://regex.crafthub.ccwu.cc/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RegexCraft — Free Online Regex Tester">
+<meta name="twitter:description" content="Test regular expressions live in your browser. Match highlighting, flags, capture groups and a cheat sheet — free, no signup.">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "RegexCraft",
+  "url": "https://regex.crafthub.ccwu.cc/",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Web",
+  "description": "Free online regular expression tester with live match highlighting, flag toggles, capture groups and a cheat sheet.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is RegexCraft free?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. RegexCraft is completely free to use, with no signup, no account and no usage limits." }
+    },
+    {
+      "@type": "Question",
+      "name": "Which regex flavor does RegexCraft use?",
+      "acceptedAnswer": { "@type": "Answer", "text": "RegexCraft uses JavaScript regular expressions — the same engine built into your browser. Any pattern accepted by new RegExp(pattern, flags) works here." }
+    },
+    {
+      "@type": "Question",
+      "name": "Does my pattern or test text leave my browser?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. Everything runs 100% locally in your browser. Your patterns and test text are never uploaded, stored or sent anywhere." }
+    },
+    {
+      "@type": "Question",
+      "name": "What flags are supported?",
+      "acceptedAnswer": { "@type": "Answer", "text": "All JavaScript regex flags: g (global), i (ignore case), m (multiline), s (dotAll), u (unicode) and y (sticky). Toggle them with the flag chips above the test area." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I use RegexCraft on mobile?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. RegexCraft is fully responsive and works in any modern mobile browser — the tester, cheat sheet and pattern library all adapt to small screens." }
+    }
+  ]
+}
+</script>
+<style>
+:root{
+  --indigo:#6366f1; --indigo-dark:#4f46e5;
+  --ink:#111827; --muted:#6b7280; --line:#e5e7eb;
+  --bg:#f9fafb; --card:#ffffff; --mark:#fde68a;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--bg);line-height:1.6}
+.wrap{max-width:1000px;margin:0 auto;padding:0 20px}
+header.site{background:#fff;border-bottom:1px solid var(--line)}
+.header-inner{display:flex;justify-content:space-between;align-items:center;padding:14px 0}
+.brand{font-weight:800;font-size:1.3rem;color:var(--indigo);text-decoration:none}
+.brand:hover{color:var(--indigo-dark)}
+nav.main-nav a{color:var(--muted);text-decoration:none;font-weight:600;font-size:.95rem}
+nav.main-nav a:hover{color:var(--ink)}
+h1{font-size:2rem;margin:30px 0 6px;letter-spacing:-.01em}
+.lede{color:var(--muted);margin:0 0 6px;font-size:1.05rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;margin:18px 0}
+.card h2{font-size:1.05rem;margin:0 0 12px}
+label.field{display:block;font-weight:600;font-size:.9rem;margin:14px 0 6px}
+label.field:first-child{margin-top:0}
+.pattern-bar{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-family:var(--mono);font-size:1.05rem;background:#fff}
+.pattern-bar:focus-within{border-color:var(--indigo);box-shadow:0 0 0 3px rgba(99,102,241,.15)}
+.pattern-bar .slash{color:var(--muted);font-weight:700;user-select:none}
+#pattern{flex:1;border:0;outline:0;font:inherit;min-width:0;color:var(--ink)}
+.flag-echo{color:var(--indigo);font-weight:700;min-width:1ch}
+.flags{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.flag{border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 15px;font-family:var(--mono);font-size:.9rem;cursor:pointer;color:var(--muted)}
+.flag:hover{border-color:var(--indigo);color:var(--indigo)}
+.flag.active{background:var(--indigo);border-color:var(--indigo);color:#fff}
+.editor{position:relative}
+.editor pre,.editor textarea{
+  margin:0;padding:12px 14px;border-radius:10px;
+  font-family:var(--mono);font-size:.92rem;line-height:1.6;
+  white-space:pre-wrap;word-wrap:break-word;overflow-wrap:break-word;
+  box-sizing:border-box;width:100%;
+}
+.editor pre{
+  position:absolute;inset:0;overflow:auto;pointer-events:none;
+  border:1px solid transparent;color:var(--ink);background:#fff;
+}
+.editor pre mark{background:var(--mark);color:inherit;border-radius:3px;padding:0 1px}
+.editor textarea{
+  position:relative;display:block;min-height:170px;resize:vertical;
+  border:1px solid var(--line);background:transparent;color:transparent;caret-color:var(--ink);
+}
+.editor textarea:focus{outline:none;border-color:var(--indigo);box-shadow:0 0 0 3px rgba(99,102,241,.15)}
+.editor textarea::selection{background:rgba(99,102,241,.25)}
+.count{font-weight:700;margin:12px 0 4px}
+.error{background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;border-radius:8px;padding:10px 14px;margin-top:12px;font-family:var(--mono);font-size:.88rem}
+.match{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:8px 0;font-size:.9rem;background:#fff}
+.match code{background:#f3f4f6;padding:2px 6px;border-radius:4px;font-family:var(--mono);font-size:.85rem;word-break:break-all}
+.grp{display:inline-block;margin:6px 10px 0 0}
+.muted{color:var(--muted);font-size:.88rem}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:#f3f4f6;border-radius:999px;padding:6px 14px;cursor:pointer;font-size:.88rem;color:var(--ink)}
+.chip:hover{border-color:var(--indigo);color:var(--indigo);background:#eef2ff}
+.cheat{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px}
+.cheat button{font-family:var(--mono);font-size:.85rem;padding:9px 4px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer;color:var(--ink)}
+.cheat button:hover{border-color:var(--indigo);color:var(--indigo);background:#eef2ff}
+.features{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:10px}
+.features li{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 16px}
+.features strong{color:var(--indigo)}
+.faq h3{font-size:1rem;margin:18px 0 4px}
+.faq p{margin:4px 0 0;color:#374151}
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:12px}
+.tool-card{display:block;background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px;text-decoration:none;color:var(--ink)}
+.tool-card:hover{border-color:var(--indigo)}
+.tool-card b{display:block;color:var(--indigo);margin-bottom:2px}
+.tool-card span{font-size:.85rem;color:var(--muted)}
+footer.site{border-top:1px solid var(--line);margin-top:36px;padding:26px 0 34px;background:#fff}
+footer.site h2{font-size:1.05rem;margin:0 0 4px}
+.copy{margin-top:22px;color:var(--muted);font-size:.85rem}
+@media(max-width:600px){
+  h1{font-size:1.5rem}
+  .card{padding:16px}
+  .pattern-bar{font-size:.95rem}
+}
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="wrap header-inner">
+    <a class="brand" href="/">RegexCraft</a>
+    <nav class="main-nav"><a href="https://crafthub.ccwu.cc/">All Tools</a></nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <h1>Free Online Regex Tester</h1>
+  <p class="lede">Test and debug regular expressions instantly — matches highlight live as you type, right in your browser.</p>
+
+  <section class="card" aria-label="Regex tester">
+    <label class="field" for="pattern">Regular expression</label>
+    <div class="pattern-bar">
+      <span class="slash">/</span><input id="pattern" type="text" value="[\w.+-]+@[\w-]+\.[\w.]+" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="Regex pattern"><span class="slash">/</span><span class="flag-echo" id="flagEcho">g</span>
+    </div>
+    <div class="flags" id="flags" role="group" aria-label="Regex flags">
+      <button type="button" class="flag active" data-flag="g" title="global">g</button>
+      <button type="button" class="flag" data-flag="i" title="ignore case">i</button>
+      <button type="button" class="flag" data-flag="m" title="multiline">m</button>
+      <button type="button" class="flag" data-flag="s" title="dotAll">s</button>
+      <button type="button" class="flag" data-flag="u" title="unicode">u</button>
+      <button type="button" class="flag" data-flag="y" title="sticky">y</button>
+    </div>
+
+    <label class="field" for="test">Test string</label>
+    <div class="editor">
+      <pre id="highlight" aria-hidden="true"></pre>
+      <textarea id="test" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="Test string">Contact us at hello@example.com or support@test.org for help.</textarea>
+    </div>
+
+    <div class="error" id="error" hidden></div>
+    <div class="count" id="count"></div>
+    <div id="matches"></div>
+  </section>
+
+  <section class="card" aria-label="Common patterns">
+    <h2>Common patterns</h2>
+    <div class="chips" id="commonChips"></div>
+  </section>
+
+  <section class="card" aria-label="Cheat sheet">
+    <h2>Cheat sheet — click to insert</h2>
+    <div class="cheat" id="cheat"></div>
+  </section>
+
+  <section class="card" aria-label="Features">
+    <h2>Why RegexCraft</h2>
+    <ul class="features">
+      <li><strong>Live highlighting.</strong> Every match lights up the moment you type — no run button, no waiting.</li>
+      <li><strong>Capture groups decoded.</strong> See each match with its offset plus numbered and named groups broken out.</li>
+      <li><strong>Private by design.</strong> Your patterns and test text never leave this page — everything runs locally in your browser.</li>
+      <li><strong>Learn as you go.</strong> One-click common patterns and a token cheat sheet that inserts at your cursor.</li>
+    </ul>
+  </section>
+
+  <section class="card faq" aria-label="Frequently asked questions">
+    <h2>FAQ</h2>
+    <h3>Is RegexCraft free?</h3>
+    <p>Yes. RegexCraft is completely free to use, with no signup, no account and no usage limits.</p>
+    <h3>Which regex flavor does it use?</h3>
+    <p>JavaScript — the same regular expression engine built into your browser. Any pattern accepted by <code>new RegExp(pattern, flags)</code> works here, so what you test is what your code will see.</p>
+    <h3>Does my pattern or test text leave my browser?</h3>
+    <p>No. Everything runs 100% locally in your browser. Nothing is uploaded, stored or sent anywhere.</p>
+    <h3>What flags are supported?</h3>
+    <p>All JavaScript regex flags: <code>g</code> (global), <code>i</code> (ignore case), <code>m</code> (multiline), <code>s</code> (dotAll), <code>u</code> (unicode) and <code>y</code> (sticky). Toggle them with the flag chips above the test area.</p>
+    <h3>Can I use it on mobile?</h3>
+    <p>Yes. RegexCraft is fully responsive and works in any modern mobile browser.</p>
+  </section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <h2>More free tools</h2>
+    <div class="tools-grid">
+      <a class="tool-card" href="https://cron.crafthub.ccwu.cc/"><b>CronCraft</b><span>Free cron expression generator &amp; builder</span></a>
+      <a class="tool-card" href="https://contrast.crafthub.ccwu.cc/"><b>ContrastCraft</b><span>Free WCAG color contrast checker</span></a>
+      <a class="tool-card" href="https://compress.crafthub.ccwu.cc/"><b>CompressCraft</b><span>Free online image compressor</span></a>
+      <a class="tool-card" href="https://regex.crafthub.ccwu.cc/"><b>RegexCraft</b><span>Free online regex tester</span></a>
+      <a class="tool-card" href="https://base64.crafthub.ccwu.cc/"><b>Base64Craft</b><span>Free Base64 encoder &amp; decoder</span></a>
+      <a class="tool-card" href="https://color.crafthub.ccwu.cc/"><b>ColorCraft</b><span>Free color palette generator</span></a>
+      <a class="tool-card" href="https://url.crafthub.ccwu.cc/"><b>URLCraft</b><span>Free QR code generator</span></a>
+    </div>
+    <p class="copy">© 2026 RegexCraft · Part of CraftHub — free online tools. All processing happens in your browser; nothing is uploaded.</p>
+  </div>
+</footer>
+<script>
+(function(){
+  "use strict";
+  var patternEl = document.getElementById('pattern');
+  var testEl = document.getElementById('test');
+  var hlEl = document.getElementById('highlight');
+  var errorEl = document.getElementById('error');
+  var countEl = document.getElementById('count');
+  var matchesEl = document.getElementById('matches');
+  var flagEcho = document.getElementById('flagEcho');
+
+  var flags = { g: true, i: false, m: false, s: false, u: false, y: false };
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  function flagString(){
+    var out = '';
+    ['g','i','m','s','u','y'].forEach(function(f){ if (flags[f]) out += f; });
+    return out;
+  }
+
+  function showError(msg){
+    errorEl.textContent = 'Invalid pattern: ' + msg;
+    errorEl.hidden = false;
+  }
+  function hideError(){
+    errorEl.hidden = true;
+    errorEl.textContent = '';
+  }
+
+  function collectMatches(re, text){
+    var matches = [];
+    if (flags.g || flags.y){
+      var m;
+      re.lastIndex = 0;
+      var guard = 0;
+      while ((m = re.exec(text)) !== null){
+        matches.push(m);
+        if (m[0] === ''){ re.lastIndex++; } // avoid infinite loop on zero-length matches
+        if (++guard > 100000) break; // absolute safety cap
+      }
+    } else {
+      var single = re.exec(text);
+      if (single) matches.push(single);
+    }
+    return matches;
+  }
+
+  function buildHighlight(text, matches){
+    var html = '', last = 0, i, m, start, end;
+    for (i = 0; i < matches.length; i++){
+      m = matches[i];
+      start = m.index;
+      end = start + m[0].length;
+      if (start < last) continue; // skip overlapping (can happen with y flag quirks)
+      html += escapeHtml(text.slice(last, start));
+      html += '<mark>' + escapeHtml(m[0] === '' ? '​' : m[0]) + '</mark>';
+      last = end;
+    }
+    html += escapeHtml(text.slice(last));
+    if (text.charAt(text.length - 1) === '\n') html += '\n'; // keep final empty line visible
+    return html;
+  }
+
+  function renderMatches(matches){
+    if (!matches.length){
+      countEl.textContent = '0 matches';
+      matchesEl.innerHTML = '<p class="muted">No matches yet — type a pattern above.</p>';
+      return;
+    }
+    countEl.textContent = matches.length + (matches.length === 1 ? ' match' : ' matches');
+    var html = '';
+    matches.forEach(function(m, idx){
+      html += '<div class="match"><div><strong>#' + (idx + 1) + '</strong> <code>' +
+        escapeHtml(m[0]) + '</code> <span class="muted">at ' + m.index + '–' + (m.index + m[0].length) + '</span></div>';
+      var groups = [];
+      for (var g = 1; g < m.length; g++){
+        groups.push('<span class="grp">Group ' + g + ': <code>' +
+          escapeHtml(m[g] === undefined ? '—' : m[g]) + '</code></span>');
+      }
+      if (m.groups){
+        Object.keys(m.groups).forEach(function(name){
+          groups.push('<span class="grp">“' + escapeHtml(name) + '”: <code>' +
+            escapeHtml(m.groups[name] === undefined ? '—' : m.groups[name]) + '</code></span>');
+        });
+      }
+      html += groups.length ? '<div>' + groups.join('') + '</div>' : '<div class="muted">no capture groups</div>';
+      html += '</div>';
+    });
+    matchesEl.innerHTML = html;
+  }
+
+  function render(){
+    var pattern = patternEl.value;
+    var text = testEl.value;
+    hideError();
+    flagEcho.textContent = flagString();
+    if (!pattern){
+      hlEl.innerHTML = escapeHtml(text) + (text.charAt(text.length - 1) === '\n' ? '\n' : '');
+      countEl.textContent = '';
+      matchesEl.innerHTML = '<p class="muted">Enter a pattern above to test.</p>';
+      return;
+    }
+    var re;
+    try {
+      re = new RegExp(pattern, flagString());
+    } catch (e){
+      showError(e.message);
+      hlEl.innerHTML = escapeHtml(text) + (text.charAt(text.length - 1) === '\n' ? '\n' : '');
+      countEl.textContent = '';
+      matchesEl.innerHTML = '';
+      return;
+    }
+    var matches = collectMatches(re, text);
+    hlEl.innerHTML = buildHighlight(text, matches);
+    renderMatches(matches);
+  }
+
+  // flag chips
+  document.getElementById('flags').addEventListener('click', function(e){
+    var btn = e.target.closest('.flag');
+    if (!btn) return;
+    var f = btn.getAttribute('data-flag');
+    flags[f] = !flags[f];
+    btn.classList.toggle('active', flags[f]);
+    render();
+  });
+
+  // scroll sync: pre follows textarea
+  testEl.addEventListener('scroll', function(){
+    hlEl.scrollTop = testEl.scrollTop;
+    hlEl.scrollLeft = testEl.scrollLeft;
+  });
+  patternEl.addEventListener('input', render);
+  testEl.addEventListener('input', render);
+
+  // common patterns
+  var COMMON = [
+    { label: 'Email', pattern: '[\\w.+-]+@[\\w-]+\\.[\\w.]+', flags: 'g',
+      sample: 'Contact us at hello@example.com or support@test.org for help.' },
+    { label: 'URL', pattern: 'https?://[^\\s/$.?#].[^\\s]*', flags: 'g',
+      sample: 'Visit https://example.com or http://test.org/page?q=1 for details.' },
+    { label: 'IPv4', pattern: '\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b', flags: 'g',
+      sample: 'Servers 192.168.1.1, 10.0.0.255 and 8.8.8.8 are up.' },
+    { label: 'Date (YYYY-MM-DD)', pattern: '\\b\\d{4}-\\d{2}-\\d{2}\\b', flags: 'g',
+      sample: 'Events on 2026-09-28 and 2025-01-15. Not a date: 2026-9-8.' },
+    { label: 'Hex color', pattern: '#[0-9a-fA-F]{3,8}\\b', flags: 'g',
+      sample: 'Brand colors: #6366f1, #fff and #10b981.' },
+    { label: 'Digits only', pattern: '^\\d+$', flags: 'gm',
+      sample: 'abc\n12345\n67x\n007' },
+    { label: 'Phone', pattern: '\\+?\\d[\\d\\s().-]{7,}\\d', flags: 'g',
+      sample: 'Call +1 (555) 123-4567 or 555.987.6543 today.' }
+  ];
+  var chipsEl = document.getElementById('commonChips');
+  COMMON.forEach(function(c){
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'chip';
+    b.textContent = c.label;
+    b.addEventListener('click', function(){
+      patternEl.value = c.pattern;
+      testEl.value = c.sample;
+      Object.keys(flags).forEach(function(f){
+        flags[f] = c.flags.indexOf(f) !== -1;
+      });
+      document.querySelectorAll('#flags .flag').forEach(function(btn){
+        btn.classList.toggle('active', flags[btn.getAttribute('data-flag')]);
+      });
+      render();
+      patternEl.focus();
+    });
+    chipsEl.appendChild(b);
+  });
+
+  // cheat sheet
+  var TOKENS = ['\\d','\\D','\\w','\\W','\\s','\\S','.','*','+','?','^','$','\\b',
+    '[abc]','[^abc]','[a-z]','(',')','(?: )','(?<name> )','|','{n}','{n,}','{n,m}','(?= )','(?! )'];
+  var cheatEl = document.getElementById('cheat');
+  TOKENS.forEach(function(tok){
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = tok;
+    b.title = 'Insert ' + tok;
+    b.addEventListener('click', function(){
+      var s = patternEl.selectionStart;
+      var e = patternEl.selectionEnd;
+      if (s === null || s === undefined){ s = e = patternEl.value.length; }
+      patternEl.value = patternEl.value.slice(0, s) + tok + patternEl.value.slice(e);
+      patternEl.focus();
+      var pos = s + tok.length;
+      try { patternEl.setSelectionRange(pos, pos); } catch (err){}
+      render();
+    });
+    cheatEl.appendChild(b);
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
